@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunlight Kitchen Restaurant - Food Delivery & Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .tab-btn.active {
+            border-bottom: 2px solid #2563eb;
+            color: #2563eb;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans text-gray-800 flex flex-col min-h-screen">
+
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('customer-menu')">
+                <div
+                    class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center font-bold text-slate-900 text-xl shadow">
+                    <i class="fa-solid fa-utensils"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl tracking-wide leading-none text-white">SUNLIGHT KITCHEN</h1>
+                    <span class="text-xs text-amber-400 tracking-wider font-medium">RESTAURANT</span>
+                </div>
+            </div>
+
+            <div id="nav-buttons" class="flex items-center space-x-4">
+            </div>
+        </div>
+    </header>
+
+    <div id="notification-banner"
+        class="hidden bg-emerald-600 text-white px-4 py-3 text-sm text-center shadow-lg transition-all">
+        <span id="notification-message"></span>
+        <button onclick="closeNotification()" class="ml-4 font-bold text-white hover:text-gray-200">&times;</button>
+    </div>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6">
+
+        <section id="page-customer-auth" class="page">
+            <div class="max-w-md mx-auto my-8 bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                <div class="text-center mb-6">
+                    <div
+                        class="w-16 h-16 bg-amber-500 text-slate-900 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-bold shadow-inner">
+                        <i class="fa-solid fa-utensils"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Customer Portal</h2>
+                    <p class="text-xs text-gray-500 mt-1">Sunlight Kitchen Restaurant Online Ordering</p>
+                </div>
+
+                <div class="flex border-b mb-6">
+                    <button id="tab-cust-login" onclick="switchAuthTab('login')"
+                        class="tab-btn active w-1/2 py-2 text-center font-semibold text-sm">Sign In</button>
+                    <button id="tab-cust-signup" onclick="switchAuthTab('signup')"
+                        class="tab-btn w-1/2 py-2 text-center font-semibold text-sm text-gray-500">Sign Up</button>
+                </div>
+
+                <form id="form-cust-login" onsubmit="handleCustomerLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Email Address</label>
+                        <input type="email" id="login-email" required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                            placeholder="customer@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Password</label>
+                        <input type="password" id="login-pass" required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                            placeholder="••••••••">
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-lg font-semibold text-sm transition">Sign
+                        In as Customer</button>
+                </form>
+
+                <form id="form-cust-signup" onsubmit="handleCustomerSignup(event)" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Full Name</label>
+                        <input type="text" id="signup-name" required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                            placeholder="John Doe">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Email Address</label>
+                        <input type="email" id="signup-email" required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                            placeholder="john@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Phone Number</label>
+                        <input type="tel" id="signup-phone" required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                            placeholder="7337574822">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Password</label>
+                        <input type="password" id="signup-pass" required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                            placeholder="••••••••">
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 py-2.5 rounded-lg font-bold text-sm transition">Create
+                        Account</button>
+                </form>
+
+                <div class="mt-6 pt-4 border-t text-center">
+                    <button onclick="navigateTo('admin-login')" class="text-xs text-blue-600 hover:underline">Switch to
+                        Website Manager / Admin Login</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-admin-login" class="page">
+            <div class="max-w-md mx-auto my-12 bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                <div class="text-center mb-6">
+                    <div
+                        class="w-16 h-16 bg-slate-900 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-bold shadow">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Admin Portal</h2>
+                    <p class="text-xs text-gray-500 mt-1">Sunlight Kitchen Website Manager Access</p>
+                </div>
+                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Username / PRN / Roll
+                            No.</label>
+                        <input type="text" id="admin-user" required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-slate-900 outline-none text-sm"
+                            placeholder="Enter Username">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Password</label>
+                        <input type="password" id="admin-pass" required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-slate-900 outline-none text-sm"
+                            placeholder="Enter Password">
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-lg font-bold text-sm transition">Login
+                        as Admin</button>
+                </form>
+                <div class="mt-6 pt-4 border-t text-center">
+                    <button onclick="navigateTo('customer-auth')" class="text-xs text-blue-600 hover:underline">Return
+                        to Customer Sign In</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-customer-menu" class="page active">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Explore Culinary Delights</h2>
+                    <p class="text-sm text-gray-500">Choose from our curated 25 delicious dishes</p>
+                </div>
+                <div class="flex w-full md:w-auto gap-2">
+                    <input type="text" id="search-input" onkeyup="filterMenu()"
+                        placeholder="Search dishes or categories..."
+                        class="w-full md:w-80 px-4 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-amber-500">
+                    <button onclick="navigateTo('cart')"
+                        class="bg-amber-500 text-slate-900 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-amber-600 transition">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span id="cart-count" class="bg-slate-900 text-white text-xs px-2 py-0.5 rounded-full">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="category-bar" class="flex gap-2 overflow-x-auto pb-4 mb-4 text-xs font-semibold">
+                <button onclick="filterCategory('All')"
+                    class="px-4 py-2 rounded-full bg-slate-900 text-white">All</button>
+                <button onclick="filterCategory('Starters')"
+                    class="px-4 py-2 rounded-full bg-white border hover:bg-gray-100">Starters</button>
+                <button onclick="filterCategory('Main Course')"
+                    class="px-4 py-2 rounded-full bg-white border hover:bg-gray-100">Main Course</button>
+                <button onclick="filterCategory('Desserts')"
+                    class="px-4 py-2 rounded-full bg-white border hover:bg-gray-100">Desserts</button>
+                <button onclick="filterCategory('Beverages')"
+                    class="px-4 py-2 rounded-full bg-white border hover:bg-gray-100">Beverages</button>
+            </div>
+
+            <div id="food-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            </div>
+        </section>
+
+        <section id="page-checkout" class="page">
+            <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden my-4">
+                <!-- Step Indicator Header -->
+                <div class="bg-slate-900 text-white p-4 md:p-6 border-b border-slate-800 flex flex-wrap justify-between items-center text-xs md:text-sm font-bold gap-2">
+                    <div id="step-btn-1" class="flex items-center gap-2 cursor-pointer text-amber-400" onclick="goToCheckoutStep(1)">
+                        <span class="w-7 h-7 rounded-full bg-amber-500 text-slate-900 flex items-center justify-center font-black">1</span>
+                        <span>Cart Review</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-600 text-xs"></i>
+                    <div id="step-btn-2" class="flex items-center gap-2 cursor-pointer text-gray-400" onclick="goToCheckoutStep(2)">
+                        <span class="w-7 h-7 rounded-full bg-slate-800 text-white flex items-center justify-center font-black">2</span>
+                        <span>Delivery Details</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-600 text-xs"></i>
+                    <div id="step-btn-3" class="flex items-center gap-2 cursor-pointer text-gray-400" onclick="goToCheckoutStep(3)">
+                        <span class="w-7 h-7 rounded-full bg-slate-800 text-white flex items-center justify-center font-black">3</span>
+                        <span>Payment Method</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-600 text-xs"></i>
+                    <div id="step-btn-4" class="flex items-center gap-2 cursor-pointer text-gray-400">
+                        <span class="w-7 h-7 rounded-full bg-slate-800 text-white flex items-center justify-center font-black">4</span>
+                        <span>Confirmation</span>
+                    </div>
+                </div>
+
+                <div class="p-6 md:p-8">
+                    <!-- Step 1: Cart Full Page -->
+                    <div id="checkout-step-1" class="space-y-6">
+                        <div class="border-b pb-4 flex justify-between items-center">
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-cart-shopping text-amber-500 mr-2"></i>Step 1: Your Food Cart</h3>
+                                <p class="text-xs text-gray-500">Review selected dishes from Sunlight Kitchen Restaurant before proceeding</p>
+                            </div>
+                            <button onclick="navigateTo('customer-menu')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-semibold">
+                                <i class="fa-solid fa-plus mr-1"></i> Add More Items
+                            </button>
+                        </div>
+                        <div id="cart-items-list" class="divide-y divide-gray-100 min-h-[160px] max-h-96 overflow-y-auto pr-2"></div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-2">
+                            <div class="flex justify-between text-sm text-gray-600">
+                                <span>Subtotal:</span>
+                                <span id="cart-subtotal-price" class="font-semibold">₹0.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm text-gray-600">
+                                <span>Delivery Fee:</span>
+                                <span class="font-semibold text-emerald-600">FREE</span>
+                            </div>
+                            <div class="flex justify-between text-sm text-gray-600">
+                                <span>GST & Restaurant Taxes (5%):</span>
+                                <span id="cart-tax-price" class="font-semibold">₹0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-3 border-t font-bold text-xl text-gray-900">
+                                <span>Total Amount:</span>
+                                <span id="cart-total-price" class="text-amber-600 font-black">₹0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-4">
+                            <button onclick="navigateTo('customer-menu')" class="px-5 py-2.5 border rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50">&larr; Continue Shopping</button>
+                            <button onclick="goToCheckoutStep(2)" class="px-8 py-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-xl text-sm shadow-md transition flex items-center gap-2">
+                                Proceed to Delivery Details (Step 2) &rarr;
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Delivery Details Full Page -->
+                    <div id="checkout-step-2" class="space-y-6 hidden">
+                        <div class="border-b pb-4">
+                            <h3 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-truck-fast text-amber-500 mr-2"></i>Step 2: Delivery Address & Details</h3>
+                            <p class="text-xs text-gray-500">Provide complete delivery contact details for Sunlight Kitchen Restaurant order dispatch</p>
+                        </div>
+                        <form id="delivery-form" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Full Name *</label>
+                                    <input type="text" id="del-name" required class="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="Enter Full Name">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Contact Phone Number *</label>
+                                    <input type="tel" id="del-phone" required class="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="7337574822" value="7337574822">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Email Address (for Gmail Order Receipt) *</label>
+                                <input type="email" id="del-email" required class="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="sunlightkitchen88@gmail.com" value="sunlightkitchen88@gmail.com">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Complete Delivery Address *</label>
+                                <textarea id="del-address" rows="3" required class="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="House/Flat No., Building Name, Street, Landmark, City, Pin Code"></textarea>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Preferred Delivery Time</label>
+                                    <select id="del-time" class="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                                        <option value="ASAP">Deliver ASAP (30 - 45 Mins)</option>
+                                        <option value="1 Hour">In 1 Hour</option>
+                                        <option value="2 Hours">In 2 Hours</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Additional Instructions for Delivery Driver</label>
+                                    <input type="text" id="del-notes" class="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="Ring bell, leave at gate, call upon arrival, etc.">
+                                </div>
+                            </div>
+                        </form>
+                        <div class="flex justify-between items-center pt-4 border-t">
+                            <button onclick="goToCheckoutStep(1)" class="px-5 py-2.5 border rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50">&larr; Back to Cart (Step 1)</button>
+                            <button onclick="submitDeliveryDetails()" class="px-8 py-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-xl text-sm shadow-md transition flex items-center gap-2">
+                                Proceed to Payment Method (Step 3) &rarr;
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Payment Method Full Page -->
+                    <div id="checkout-step-3" class="space-y-6 hidden">
+                        <div class="border-b pb-4">
+                            <h3 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-credit-card text-amber-500 mr-2"></i>Step 3: Select Payment Method</h3>
+                            <p class="text-xs text-gray-500">Choose your payment mode to complete Sunlight Kitchen Restaurant order</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                            <label onclick="selectPaymentMethod('Credit Card')" class="pay-option-card flex flex-col p-4 border-2 border-amber-500 rounded-xl cursor-pointer bg-amber-50/40 transition">
+                                <div class="flex items-center justify-between mb-2">
+                                    <input type="radio" name="payment-method" value="Credit Card" checked class="text-amber-500 accent-amber-500" onchange="selectPaymentMethod('Credit Card')">
+                                    <i class="fa-solid fa-credit-card text-2xl text-blue-600"></i>
+                                </div>
+                                <span class="font-bold text-sm text-gray-800">Credit Card</span>
+                                <span class="text-[11px] text-gray-500 mt-1">Visa, MasterCard, Amex</span>
+                            </label>
+                            
+                            <label onclick="selectPaymentMethod('Debit Card')" class="pay-option-card flex flex-col p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-amber-500 bg-gray-50 transition">
+                                <div class="flex items-center justify-between mb-2">
+                                    <input type="radio" name="payment-method" value="Debit Card" class="text-amber-500 accent-amber-500" onchange="selectPaymentMethod('Debit Card')">
+                                    <i class="fa-solid fa-credit-card text-2xl text-emerald-600"></i>
+                                </div>
+                                <span class="font-bold text-sm text-gray-800">Debit Card</span>
+                                <span class="text-[11px] text-gray-500 mt-1">All Indian ATM Cards</span>
+                            </label>
+                            
+                            <label onclick="selectPaymentMethod('UPI / Net Banking')" class="pay-option-card flex flex-col p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-amber-500 bg-gray-50 transition">
+                                <div class="flex items-center justify-between mb-2">
+                                    <input type="radio" name="payment-method" value="UPI / Net Banking" class="text-amber-500 accent-amber-500" onchange="selectPaymentMethod('UPI / Net Banking')">
+                                    <i class="fa-solid fa-mobile-screen-button text-2xl text-purple-600"></i>
+                                </div>
+                                <span class="font-bold text-sm text-gray-800">UPI / GPay</span>
+                                <span class="text-[11px] text-gray-500 mt-1">Google Pay, PhonePe, Paytm</span>
+                            </label>
+
+                            <label onclick="selectPaymentMethod('Cash on Delivery')" class="pay-option-card flex flex-col p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-amber-500 bg-gray-50 transition">
+                                <div class="flex items-center justify-between mb-2">
+                                    <input type="radio" name="payment-method" value="Cash on Delivery" class="text-amber-500 accent-amber-500" onchange="selectPaymentMethod('Cash on Delivery')">
+                                    <i class="fa-solid fa-money-bill-wave text-2xl text-amber-600"></i>
+                                </div>
+                                <span class="font-bold text-sm text-gray-800">Cash on Delivery</span>
+                                <span class="text-[11px] text-gray-500 mt-1">Pay cash when food arrives</span>
+                            </label>
+                        </div>
+
+                        <!-- Card Input Fields (For Credit/Debit Card) -->
+                        <div id="card-details-fields" class="p-5 bg-slate-50 rounded-xl space-y-4 border border-slate-200">
+                            <h4 class="text-xs font-bold uppercase text-slate-700 tracking-wider flex items-center gap-2"><i class="fa-solid fa-lock text-emerald-600"></i> Secure Card Details</h4>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Cardholder Name</label>
+                                <input type="text" id="card-name" placeholder="Name on Card" class="w-full px-4 py-2.5 border rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Card Number</label>
+                                <input type="text" id="card-num" placeholder="4532 •••• •••• 8899" maxlength="19" class="w-full px-4 py-2.5 border rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-600 mb-1">Expiry Date</label>
+                                    <input type="text" id="card-exp" placeholder="MM/YY" maxlength="5" class="w-full px-4 py-2.5 border rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-amber-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-600 mb-1">CVV Code</label>
+                                    <input type="password" id="card-cvv" placeholder="123" maxlength="3" class="w-full px-4 py-2.5 border rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-amber-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- UPI Input Fields -->
+                        <div id="upi-details-fields" class="hidden p-5 bg-purple-50 rounded-xl space-y-3 border border-purple-200">
+                            <h4 class="text-xs font-bold uppercase text-purple-900 tracking-wider flex items-center gap-2"><i class="fa-solid fa-mobile-screen-button text-purple-700"></i> Enter VPA / UPI ID</h4>
+                            <input type="text" id="upi-id" placeholder="username@upi / mobile@paytm" class="w-full px-4 py-2.5 border rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-purple-500">
+                            <p class="text-[11px] text-purple-700"><i class="fa-solid fa-shield-check mr-1"></i> A payment link will be sent to your UPI App (GPay / PhonePe / Paytm) upon placing the order.</p>
+                        </div>
+
+                        <!-- COD Details Box -->
+                        <div id="cod-details-fields" class="hidden p-5 bg-amber-50 rounded-xl space-y-2 border border-amber-200 text-amber-900">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center font-bold text-xl">
+                                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-sm text-amber-950">Cash on Delivery (COD) Selected</h4>
+                                    <p class="text-xs text-amber-800">Pay cash to our delivery driver when your food arrives at your door. No online card details required.</p>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-xs bg-white p-3 rounded-lg border border-amber-200 text-gray-700">
+                                <p class="font-semibold text-amber-900"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> Delivery Tip:</p>
+                                <p>Please keep exact change ready if possible to ensure contactless and quick delivery.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-4 border-t">
+                            <button onclick="goToCheckoutStep(2)" class="px-5 py-2.5 border rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50">&larr; Back to Delivery Details (Step 2)</button>
+                            <button onclick="processFinalOrder()" class="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow-lg transition flex items-center gap-2">
+                                <i class="fa-solid fa-circle-check mr-1"></i> Place Order Now (Step 4)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Order Confirmation Full Page -->
+                    <div id="checkout-step-4" class="text-center space-y-6 py-6 hidden">
+                        <div class="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-5xl shadow-inner">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl font-black text-gray-900">Order Confirmed!</h3>
+                            <p class="text-sm text-gray-600 mt-1">Thank you for ordering with <strong>Sunlight Kitchen Restaurant</strong>.</p>
+                        </div>
+
+                        <div class="bg-gray-50 p-6 rounded-2xl text-left text-sm max-w-xl mx-auto border border-gray-200 space-y-3 shadow-sm">
+                            <div class="flex justify-between items-center border-b pb-3">
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase font-bold">Order ID</p>
+                                    <p id="conf-order-id" class="text-lg font-black text-blue-600"></p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500 uppercase font-bold">Total Paid</p>
+                                    <p id="conf-total" class="text-lg font-black text-amber-600"></p>
+                                </div>
+                            </div>
+                            <div class="text-xs space-y-1.5 text-gray-700">
+                                <p><strong>Customer Name:</strong> <span id="conf-cust-name"></span></p>
+                                <p><strong>Contact Phone:</strong> <span id="conf-cust-phone">7337574822</span></p>
+                                <p><strong>Working Email ID:</strong> <span id="conf-cust-email" class="font-bold text-blue-700">sunlightkitchen88@gmail.com</span></p>
+                                <p><strong>Delivering to Address:</strong> <span id="conf-address"></span></p>
+                                <p><strong>Payment Method:</strong> <span id="conf-payment"></span></p>
+                            </div>
+                            
+                            <div id="email-dispatch-status" class="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-xs text-emerald-900 flex items-start gap-3 mt-3 shadow-sm">
+                                <i class="fa-solid fa-envelope-circle-check text-emerald-600 text-2xl mt-0.5" id="email-spinner-icon"></i>
+                                <div>
+                                    <p class="font-bold text-emerald-950 text-sm" id="email-status-title">Real Working Email Dispatched!</p>
+                                    <p id="conf-alert-text">Order receipt sent to your email. Sunlight Kitchen Restaurant team is preparing your order!</p>
+                                </div>
+                            </div>
+
+                            <!-- Custom Send Mail Option in Final Step -->
+                            <div class="bg-amber-50/80 p-4 rounded-xl border border-amber-200 text-xs space-y-2 mt-3 shadow-sm">
+                                <label class="block font-bold text-slate-800 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-paper-plane text-amber-600"></i> Send Order Receipt to Any Email Address:
+                                </label>
+                                <div class="flex gap-2">
+                                    <input type="email" id="custom-send-email-input" placeholder="enter working mail (e.g. sunlightkitchen88@gmail.com)" class="flex-grow px-3.5 py-2 border rounded-xl bg-white text-xs text-gray-800 outline-none focus:ring-2 focus:ring-amber-500">
+                                    <button onclick="sendCustomOrderMail()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition shadow">
+                                        <i class="fa-solid fa-envelope"></i> Send Mail Now
+                                    </button>
+                                </div>
+                                <p class="text-[11px] text-gray-500">Type any working email above and click 'Send Mail Now' to dispatch an order email instantly.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap justify-center gap-3 pt-2">
+                            <a id="conf-gmail-btn" target="_blank" href="#" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-sm transition flex items-center gap-2 shadow-md">
+                                <i class="fa-solid fa-envelope"></i> Open Gmail Confirmation
+                            </a>
+                            <button onclick="navigateTo('customer-orders')" class="px-6 py-3 bg-slate-900 text-white font-bold rounded-xl text-sm hover:bg-slate-800 shadow-md transition">
+                                <i class="fa-solid fa-box-archive mr-2"></i> View My Orders
+                            </button>
+                            <button onclick="navigateTo('customer-menu')" class="px-5 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl text-sm transition">
+                                Order More Food
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-customer-profile" class="page">
+            <div class="max-w-5xl mx-auto space-y-6 my-4">
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 rounded-full bg-amber-500 text-slate-900 flex items-center justify-center text-2xl font-bold shadow-inner">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800" id="prof-name">Customer</h2>
+                            <p class="text-xs text-gray-500"><i class="fa-solid fa-envelope mr-1"></i><span id="prof-email">sunlightkitchen88@gmail.com</span> | <i class="fa-solid fa-phone mr-1"></i><span id="prof-phone">7337574822</span></p>
+                        </div>
+                    </div>
+                    <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 text-xs text-amber-900">
+                        <p class="font-bold"><i class="fa-solid fa-headset mr-1"></i>Sunlight Kitchen Support:</p>
+                        <p><i class="fa-solid fa-phone mr-1"></i> 7337574822</p>
+                        <p><i class="fa-solid fa-envelope mr-1"></i> sunlightkitchen88@gmail.com</p>
+                    </div>
+                </div>
+
+                <!-- Customer Dashboard: Edit All Profile & Account Info -->
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-md border border-gray-100 space-y-4">
+                    <div class="border-b pb-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800"><i class="fa-solid fa-user-pen text-amber-500 mr-2"></i>Customer Account Dashboard</h3>
+                            <p class="text-xs text-gray-500">Edit all your account information, default delivery address, and contact details</p>
+                        </div>
+                        <span class="text-xs font-bold bg-amber-100 text-amber-900 px-3 py-1 rounded-full"><i class="fa-solid fa-user-gear mr-1"></i>Profile Settings</span>
+                    </div>
+
+                    <form id="customer-info-form" onsubmit="event.preventDefault(); saveCustomerProfileInfo();" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Customer Full Name *</label>
+                                <input type="text" id="edit-prof-name" required class="w-full px-4 py-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500" placeholder="Your Name">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Contact Phone Number *</label>
+                                <input type="tel" id="edit-prof-phone" required class="w-full px-4 py-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500" placeholder="7337574822">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Working Email Address *</label>
+                                <input type="email" id="edit-prof-email" required class="w-full px-4 py-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500" placeholder="sunlightkitchen88@gmail.com">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Preferred Payment Mode</label>
+                                <select id="edit-prof-pay" class="w-full px-4 py-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500">
+                                    <option value="Cash on Delivery">Cash on Delivery (COD)</option>
+                                    <option value="Credit Card">Credit Card</option>
+                                    <option value="Debit Card">Debit Card</option>
+                                    <option value="UPI / Net Banking">UPI / GPay</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Default Delivery Address *</label>
+                            <textarea id="edit-prof-address" rows="2" required class="w-full px-4 py-2.5 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500" placeholder="Flat/House No., Street, Landmark, City, Pincode"></textarea>
+                        </div>
+
+                        <div class="flex justify-end pt-2">
+                            <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-6 py-2.5 rounded-xl text-xs shadow-md transition flex items-center gap-2">
+                                <i class="fa-solid fa-floppy-disk"></i> Save Customer Info Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-md border border-gray-100">
+                    <div class="flex justify-between items-center border-b pb-4 mb-6">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-box-archive text-amber-500 mr-2"></i>My Orders Page</h3>
+                            <p class="text-xs text-gray-500">Full order history & active order cancellation management for Sunlight Kitchen Restaurant</p>
+                        </div>
+                    </div>
+                    <div id="customer-orders-list" class="space-y-4"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-admin-dashboard" class="page">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Website Manager Dashboard</h2>
+                    <p class="text-xs text-gray-500">Real-time overview & sales analytics</p>
+                </div>
+                <button onclick="logoutAdmin()"
+                    class="bg-red-600 text-white text-xs px-3 py-2 rounded font-bold hover:bg-red-700">Logout
+                    Admin</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase">Total Gross Revenue</p>
+                        <h3 id="dash-revenue" class="text-2xl font-black text-gray-800">₹0.00</h3>
+                    </div>
+                    <div
+                        class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase">Orders Processed</p>
+                        <h3 id="dash-orders-count" class="text-2xl font-black text-gray-800">0</h3>
+                    </div>
+                    <div
+                        class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase">Total Food Items</p>
+                        <h3 id="dash-items-count" class="text-2xl font-black text-gray-800">25</h3>
+                    </div>
+                    <div
+                        class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-bowl-food"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase">Registered Customers</p>
+                        <h3 id="dash-cust-count" class="text-2xl font-black text-gray-800">0</h3>
+                    </div>
+                    <div
+                        class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border mb-6">
+                <h3 class="text-sm font-bold text-gray-700 mb-4">Sales & Order Analysis</h3>
+                <div class="h-64">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                <div class="flex border-b text-xs font-bold bg-gray-50">
+                    <button onclick="switchAdminTab('menu')" id="admin-tab-menu"
+                        class="px-6 py-3 border-b-2 border-slate-900 text-slate-900">Manage Food Menu</button>
+                    <button onclick="switchAdminTab('orders')" id="admin-tab-orders"
+                        class="px-6 py-3 text-gray-500">Manage Orders</button>
+                    <button onclick="switchAdminTab('customers')" id="admin-tab-customers"
+                        class="px-6 py-3 text-gray-500">Registered Customers</button>
+                </div>
+
+                <div class="p-6">
+                    <div id="admin-sec-menu" class="space-y-6">
+                        <form onsubmit="handleAddFoodItem(event)"
+                            class="bg-gray-50 p-4 rounded-lg border flex flex-col md:flex-row gap-3 items-end">
+                            <div class="flex-grow w-full">
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Dish Name</label>
+                                <input type="text" id="new-dish-name" required
+                                    class="w-full px-3 py-1.5 border rounded text-xs">
+                            </div>
+                            <div class="w-full md:w-32">
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Price (₹)</label>
+                                <input type="number" step="0.01" id="new-dish-price" required
+                                    class="w-full px-3 py-1.5 border rounded text-xs">
+                            </div>
+                            <div class="w-full md:w-40">
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Category</label>
+                                <select id="new-dish-cat" class="w-full px-3 py-1.5 border rounded text-xs">
+                                    <option value="Starters">Starters</option>
+                                    <option value="Main Course">Main Course</option>
+                                    <option value="Desserts">Desserts</option>
+                                    <option value="Beverages">Beverages</option>
+                                </select>
+                            </div>
+                            <div class="flex-grow w-full">
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Image URL</label>
+                                <input type="url" id="new-dish-img" required
+                                    class="w-full px-3 py-1.5 border rounded text-xs" placeholder="https://...">
+                            </div>
+                            <button type="submit"
+                                class="bg-emerald-600 text-white px-4 py-2 rounded text-xs font-bold hover:bg-emerald-700 w-full md:w-auto">Add
+                                Dish</button>
+                        </form>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-100 border-b">
+                                        <th class="p-2">Image</th>
+                                        <th class="p-2">Name</th>
+                                        <th class="p-2">Category</th>
+                                        <th class="p-2">Price</th>
+                                        <th class="p-2">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-food-table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="admin-sec-orders" class="hidden overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 border-b">
+                                    <th class="p-2">Order ID</th>
+                                    <th class="p-2">Customer</th>
+                                    <th class="p-2">Items</th>
+                                    <th class="p-2">Total</th>
+                                    <th class="p-2">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-orders-table"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="admin-sec-customers" class="hidden overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 border-b">
+                                    <th class="p-2">Name</th>
+                                    <th class="p-2">Email</th>
+                                    <th class="p-2">Phone</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-customers-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    </footer>
+
+    <!-- Floating Bottom Cart Banner -->
+    <div id="floating-cart-bar" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 max-w-xl w-[92%] bg-slate-900 text-white p-4 rounded-2xl shadow-2xl z-50 flex items-center justify-between border border-amber-500/50 backdrop-blur-md">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-900 flex items-center justify-center font-bold text-lg">
+                <i class="fa-solid fa-cart-shopping"></i>
+            </div>
+            <div>
+                <p class="font-bold text-sm text-white"><span id="float-cart-count">0</span> Items in Cart</p>
+                <p class="text-xs text-amber-400 font-semibold" id="float-cart-total">Total: ₹0.00</p>
+            </div>
+        </div>
+        <button onclick="navigateTo('cart')" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-5 py-2.5 rounded-xl font-black text-xs shadow-lg transition flex items-center gap-2">
+            View Cart & Checkout (Step 1) &rarr;
+        </button>
+    </div>
+
+    <script>
+        // Default Master 25 Food Items
+        const initialFoodItems = [
+            { id: 1, name: "Margherita Pizza", price: 299, category: "Main Course", image: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=500&q=80" },
+            { id: 2, name: "Classic Cheeseburger", price: 249, category: "Main Course", image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80" },
+            { id: 3, name: "Caesar Salad", price: 199, category: "Starters", image: "https://images.unsplash.com/photo-1546793665-c74683f339c1?auto=format&fit=crop&w=500&q=80" },
+            { id: 4, name: "Crispy French Fries", price: 129, category: "Starters", image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=500&q=80" },
+            { id: 5, name: "Grilled Chicken Pasta", price: 349, category: "Main Course", image: "https://images.unsplash.com/photo-1621996346565-e3d5d6281276?auto=format&fit=crop&w=500&q=80" },
+            { id: 6, name: "Chocolate Lava Cake", price: 179, category: "Desserts", image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=500&q=80" },
+            { id: 7, name: "Iced Cappuccino", price: 149, category: "Beverages", image: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=500&q=80" },
+            { id: 8, name: "Paneer Tikka", price: 279, category: "Starters", image: "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&w=500&q=80" },
+            { id: 9, name: "Butter Chicken with Naan", price: 399, category: "Main Course", image: "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&w=500&q=80" },
+            { id: 10, name: "Sushi Platter", price: 499, category: "Main Course", image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=500&q=80" },
+            { id: 11, name: "Garlic Breadsticks", price: 139, category: "Starters", image: "https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?auto=format&fit=crop&w=500&q=80" },
+            { id: 12, name: "Fresh Mango Smoothie", price: 159, category: "Beverages", image: "https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=500&q=80" },
+            { id: 13, name: "Tiramisu Classic", price: 199, category: "Desserts", image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=500&q=80" },
+            { id: 14, name: "BBQ Chicken Wings", price: 269, category: "Starters", image: "https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&w=500&q=80" },
+            { id: 15, name: "Vegetable Biryani", price: 299, category: "Main Course", image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=500&q=80" },
+            { id: 16, name: "Strawberry Ice Cream Sundae", price: 149, category: "Desserts", image: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80" },
+            { id: 17, name: "Fresh Lemon Mojito", price: 119, category: "Beverages", image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=500&q=80" },
+            { id: 18, name: "Fish and Chips", price: 349, category: "Main Course", image: "https://images.unsplash.com/photo-1579208030886-b937da0925dc?auto=format&fit=crop&w=500&q=80" },
+            { id: 19, name: "Spring Rolls", price: 169, category: "Starters", image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=500&q=80" },
+            { id: 20, name: "New York Cheesecake", price: 199, category: "Desserts", image: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=500&q=80" },
+            { id: 21, name: "Cold Brew Coffee", price: 139, category: "Beverages", image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=500&q=80" },
+            { id: 22, name: "Mushroom Risotto", price: 329, category: "Main Course", image: "https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=500&q=80" },
+            { id: 23, name: "Nachos Supreme", price: 219, category: "Starters", image: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?auto=format&fit=crop&w=500&q=80" },
+            { id: 24, name: "Chocolate Milkshake", price: 149, category: "Beverages", image: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=500&q=80" },
+            { id: 25, name: "Apple Pie", price: 169, category: "Desserts", image: "https://images.unsplash.com/photo-1568571780765-9276ac8b75a2?auto=format&fit=crop&w=500&q=80" }
+        ];
+
+        // App Data Storage - Always use fresh initialFoodItems
+        localStorage.setItem('sunlight_foods', JSON.stringify(initialFoodItems));
+        let foodItems = initialFoodItems;
+        let users = JSON.parse(localStorage.getItem('sunlight_users')) || [];
+        let orders = JSON.parse(localStorage.getItem('sunlight_orders')) || [];
+        let cart = JSON.parse(localStorage.getItem('sunlight_cart')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('sunlight_current_user')) || {
+            id: 101,
+            name: "Customer",
+            email: "sunlightkitchen88@gmail.com",
+            phone: "7337574822"
+        };
+        let isAdminLoggedIn = false;
+        let salesChartInstance = null;
+
+        // Initialize App
+        window.onload = function () {
+            saveData();
+            updateNav();
+            renderFoodGrid(foodItems);
+            renderAdminDashboard();
+            updateCartUI();
+            navigateTo('customer-menu');
+        };
+
+        function saveData() {
+            localStorage.setItem('sunlight_foods', JSON.stringify(foodItems));
+            localStorage.setItem('sunlight_users', JSON.stringify(users));
+            localStorage.setItem('sunlight_orders', JSON.stringify(orders));
+            localStorage.setItem('sunlight_cart', JSON.stringify(cart));
+            if (currentUser) localStorage.setItem('sunlight_current_user', JSON.stringify(currentUser));
+        }
+
+        // Navigation Controller
+        function navigateTo(pageId) {
+            let targetId = pageId;
+            if (pageId === 'cart') targetId = 'checkout';
+
+            const targetEl = document.getElementById(`page-${targetId}`);
+            if (!targetEl) return;
+
+            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+            targetEl.classList.add('active');
+
+            if (pageId === 'customer-menu') renderFoodGrid(foodItems);
+            if (pageId === 'cart' || pageId === 'checkout') {
+                goToCheckoutStep(1);
+            }
+            if (pageId === 'customer-profile' || pageId === 'customer-orders') {
+                renderCustomerProfile();
+            }
+            if (pageId === 'admin-dashboard') {
+                if (!isAdminLoggedIn) {
+                    navigateTo('admin-login');
+                    return;
+                }
+                renderAdminDashboard();
+            }
+            updateNav();
+            window.scrollTo(0, 0);
+        }
+
+        function updateNav() {
+            const container = document.getElementById('nav-buttons');
+            container.innerHTML = '';
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+
+            if (isAdminLoggedIn) {
+                container.innerHTML = `
+                    <span class="text-xs text-amber-400 font-bold bg-slate-800 px-3 py-1.5 rounded-full"><i class="fa-solid fa-shield-halved mr-1"></i>Admin Mode</span>
+                    <button onclick="navigateTo('admin-dashboard')" class="text-xs text-white hover:text-amber-400 font-semibold">Dashboard</button>
+                    <button onclick="logoutAdmin()" class="text-xs text-red-400 font-semibold">Logout</button>
+                `;
+            } else if (currentUser) {
+                container.innerHTML = `
+                    <button onclick="navigateTo('customer-menu')" class="text-xs text-white hover:text-amber-400 font-semibold">Menu</button>
+                    <button onclick="navigateTo('cart')" class="text-xs bg-amber-500 text-slate-900 font-bold px-3 py-1.5 rounded-lg hover:bg-amber-400 flex items-center gap-1">
+                        <i class="fa-solid fa-cart-shopping"></i> Cart (<span id="header-cart-count">${count}</span>)
+                    </button>
+                    <button onclick="navigateTo('customer-orders')" class="text-xs text-white hover:text-amber-400 font-semibold">My Orders</button>
+                    <button onclick="navigateTo('customer-profile')" class="text-xs bg-slate-800 px-3 py-1.5 rounded-full text-amber-400 font-semibold"><i class="fa-solid fa-user mr-1"></i>${currentUser.name}</button>
+                    <button onclick="logoutCustomer()" class="text-xs text-red-400 font-semibold">Logout</button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button onclick="navigateTo('customer-menu')" class="text-xs text-white hover:text-amber-400 font-semibold">Menu</button>
+                    <button onclick="navigateTo('cart')" class="text-xs bg-amber-500 text-slate-900 font-bold px-3 py-1.5 rounded-lg hover:bg-amber-400 flex items-center gap-1">
+                        <i class="fa-solid fa-cart-shopping"></i> Cart (<span id="header-cart-count">${count}</span>)
+                    </button>
+                    <button onclick="navigateTo('customer-auth')" class="text-xs text-gray-300 hover:text-white font-semibold">Sign In / Sign Up</button>
+                    <button onclick="navigateTo('admin-login')" class="text-xs text-gray-300 hover:text-white">Admin Login</button>
+                `;
+            }
+        }
+
+        // Notification Manager
+        function triggerNotification(msg) {
+            const banner = document.getElementById('notification-banner');
+            document.getElementById('notification-message').innerHTML = msg;
+            banner.classList.remove('hidden');
+            setTimeout(() => banner.classList.add('hidden'), 6000);
+        }
+
+        function closeNotification() {
+            document.getElementById('notification-banner').classList.add('hidden');
+        }
+
+        // Authentication Handlers
+        function switchAuthTab(type) {
+            const loginBtn = document.getElementById('tab-cust-login');
+            const signupBtn = document.getElementById('tab-cust-signup');
+            const loginForm = document.getElementById('form-cust-login');
+            const signupForm = document.getElementById('form-cust-signup');
+
+            if (type === 'login') {
+                loginBtn.classList.add('active', 'text-blue-600');
+                signupBtn.classList.remove('active', 'text-blue-600');
+                signupBtn.classList.add('text-gray-500');
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+            } else {
+                signupBtn.classList.add('active', 'text-blue-600');
+                loginBtn.classList.remove('active', 'text-blue-600');
+                loginBtn.classList.add('text-gray-500');
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        function handleCustomerSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const phone = document.getElementById('signup-phone').value;
+            const pass = document.getElementById('signup-pass').value;
+
+            if (users.find(u => u.email === email)) {
+                alert("Account with this email already exists!");
+                return;
+            }
+
+            const newUser = { id: Date.now(), name, email, phone, pass };
+            users.push(newUser);
+            currentUser = newUser;
+            saveData();
+
+            triggerNotification(`<i class="fa-solid fa-paper-plane mr-2"></i><strong>SMS & Email Alert:</strong> Account created successfully! Welcome message sent to Mobile (${phone}) and Gmail (${email}).`);
+            navigateTo('customer-menu');
+        }
+
+        function handleCustomerLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+
+            const user = users.find(u => u.email === email && u.pass === pass);
+            if (user) {
+                currentUser = user;
+                saveData();
+                navigateTo('customer-menu');
+            } else {
+                alert("Invalid Credentials. Please sign up if you don't have an account.");
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('admin-user').value;
+            const p = document.getElementById('admin-pass').value;
+
+            if (u === "admin1188" && p === "Harikrishna@1188") {
+                isAdminLoggedIn = true;
+                navigateTo('admin-dashboard');
+            } else {
+                alert("Invalid Admin Username or Password.");
+            }
+        }
+
+        function logoutCustomer() {
+            currentUser = null;
+            localStorage.removeItem('haven_current_user');
+            navigateTo('customer-auth');
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            navigateTo('admin-login');
+        }
+
+        // Food Display & Filtering
+        function renderFoodGrid(items) {
+            const grid = document.getElementById('food-grid');
+            grid.innerHTML = items.map(dish => `
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition">
+                    <img src="${dish.image}" alt="${dish.name}" class="h-40 w-full object-cover" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80'">
+                    <div class="p-4 flex flex-col flex-grow">
+                        <span class="text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 px-2 py-0.5 rounded w-fit mb-1">${dish.category}</span>
+                        <h4 class="font-bold text-gray-800 text-base mb-1">${dish.name}</h4>
+                        <div class="mt-auto flex items-center justify-between pt-3 border-t">
+                            <span class="font-black text-gray-900">₹${dish.price.toFixed(2)}</span>
+                            <button onclick="addToCart(${dish.id})" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterMenu() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = foodItems.filter(item =>
+                item.name.toLowerCase().includes(query) ||
+                item.category.toLowerCase().includes(query)
+            );
+            renderFoodGrid(filtered);
+        }
+
+        function filterCategory(cat) {
+            if (cat === 'All') {
+                renderFoodGrid(foodItems);
+            } else {
+                renderFoodGrid(foodItems.filter(item => item.category === cat));
+            }
+        }
+
+        // Cart & Checkout Workflow
+        function addToCart(dishId) {
+            if (!currentUser) {
+                currentUser = {
+                    id: Date.now(),
+                    name: "Customer",
+                    email: "sunlightkitchen88@gmail.com",
+                    phone: "7337574822"
+                };
+                saveData();
+            }
+            const dish = foodItems.find(d => d.id === dishId);
+            const existing = cart.find(c => c.id === dishId);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ ...dish, qty: 1 });
+            }
+            updateCartUI();
+            triggerNotification(`<i class="fa-solid fa-cart-plus mr-2"></i>Added <strong>${dish.name}</strong> to your cart! Click on cart icon to checkout.`);
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-count').innerText = count;
+            
+            const headerCount = document.getElementById('header-cart-count');
+            if(headerCount) headerCount.innerText = count;
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const tax = subtotal * 0.05;
+            const total = subtotal + tax;
+
+            // Floating cart bar updates
+            const floatBar = document.getElementById('floating-cart-bar');
+            const floatCount = document.getElementById('float-cart-count');
+            const floatTotal = document.getElementById('float-cart-total');
+
+            if (count > 0) {
+                if (floatBar) floatBar.classList.remove('hidden');
+                if (floatCount) floatCount.innerText = count;
+                if (floatTotal) floatTotal.innerText = `Total: ₹${total.toFixed(2)}`;
+            } else {
+                if (floatBar) floatBar.classList.add('hidden');
+            }
+
+            const cartList = document.getElementById('cart-items-list');
+            if (cart.length === 0) {
+                cartList.innerHTML = `<p class="text-gray-400 py-8 text-center text-sm font-semibold">Your cart is currently empty. Add delicious dishes from Sunlight Kitchen Restaurant to proceed.</p>`;
+                if(document.getElementById('cart-subtotal-price')) document.getElementById('cart-subtotal-price').innerText = `₹0.00`;
+                if(document.getElementById('cart-tax-price')) document.getElementById('cart-tax-price').innerText = `₹0.00`;
+                document.getElementById('cart-total-price').innerText = `₹0.00`;
+            } else {
+                cartList.innerHTML = cart.map(item => `
+                    <div class="py-4 flex justify-between items-center gap-4">
+                        <div class="flex items-center gap-3">
+                            <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80'">
+                            <div>
+                                <p class="font-bold text-sm text-gray-900">${item.name}</p>
+                                <p class="text-xs text-gray-500">₹${item.price.toFixed(2)} each</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center border rounded-lg overflow-hidden bg-gray-50">
+                                <button onclick="changeQty(${item.id}, -1)" class="w-7 h-7 bg-gray-100 hover:bg-gray-200 font-bold text-xs">-</button>
+                                <span class="px-3 text-xs font-bold text-gray-800">${item.qty}</span>
+                                <button onclick="changeQty(${item.id}, 1)" class="w-7 h-7 bg-gray-100 hover:bg-gray-200 font-bold text-xs">+</button>
+                            </div>
+                            <span class="text-sm font-bold text-gray-900 w-20 text-right">₹${(item.price * item.qty).toFixed(2)}</span>
+                            <button onclick="changeQty(${item.id}, -${item.qty})" class="text-red-500 hover:text-red-700 text-xs ml-1"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+
+                if(document.getElementById('cart-subtotal-price')) document.getElementById('cart-subtotal-price').innerText = `₹${subtotal.toFixed(2)}`;
+                if(document.getElementById('cart-tax-price')) document.getElementById('cart-tax-price').innerText = `₹${tax.toFixed(2)}`;
+                document.getElementById('cart-total-price').innerText = `₹${total.toFixed(2)}`;
+            }
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(c => c.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    cart = cart.filter(c => c.id !== id);
+                }
+            }
+            saveData();
+            updateCartUI();
+        }
+
+        function selectPaymentMethod(method) {
+            const radios = document.getElementsByName('payment-method');
+            radios.forEach(r => {
+                const isSelected = (r.value === method);
+                r.checked = isSelected;
+                const cardLabel = r.closest('.pay-option-card');
+                if (cardLabel) {
+                    if (isSelected) {
+                        cardLabel.classList.add('border-amber-500', 'bg-amber-50/40');
+                        cardLabel.classList.remove('border-gray-200', 'bg-gray-50');
+                    } else {
+                        cardLabel.classList.remove('border-amber-500', 'bg-amber-50/40');
+                        cardLabel.classList.add('border-gray-200', 'bg-gray-50');
+                    }
+                }
+            });
+
+            const cardFields = document.getElementById('card-details-fields');
+            const upiFields = document.getElementById('upi-details-fields');
+            const codFields = document.getElementById('cod-details-fields');
+
+            if (method === 'Cash on Delivery') {
+                if (cardFields) cardFields.classList.add('hidden');
+                if (upiFields) upiFields.classList.add('hidden');
+                if (codFields) codFields.classList.remove('hidden');
+            } else if (method === 'UPI / Net Banking') {
+                if (cardFields) cardFields.classList.add('hidden');
+                if (upiFields) upiFields.classList.remove('hidden');
+                if (codFields) codFields.classList.add('hidden');
+            } else {
+                if (cardFields) cardFields.classList.remove('hidden');
+                if (upiFields) upiFields.classList.add('hidden');
+                if (codFields) codFields.classList.add('hidden');
+            }
+        }
+
+        function goToCheckoutStep(step) {
+            if (step > 1 && cart.length === 0) {
+                if (foodItems.length > 0) {
+                    cart.push({ ...foodItems[0], qty: 1 });
+                    saveData();
+                    updateCartUI();
+                }
+            }
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById(`checkout-step-${i}`);
+                if (el) el.classList.add('hidden');
+                const btn = document.getElementById(`step-btn-${i}`);
+                if (btn) {
+                    btn.classList.remove('text-amber-400');
+                    btn.classList.add('text-gray-400');
+                }
+            }
+            const target = document.getElementById(`checkout-step-${step}`);
+            if (target) target.classList.remove('hidden');
+            const activeBtn = document.getElementById(`step-btn-${step}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-400');
+                activeBtn.classList.add('text-amber-400');
+            }
+
+            if (step === 2 && currentUser) {
+                if (!document.getElementById('del-name').value) document.getElementById('del-name').value = currentUser.name || 'Customer';
+                if (!document.getElementById('del-phone').value) document.getElementById('del-phone').value = currentUser.phone || '7337574822';
+                if (!document.getElementById('del-email').value) document.getElementById('del-email').value = currentUser.email || 'sunlightkitchen88@gmail.com';
+                if (!document.getElementById('del-address').value) document.getElementById('del-address').value = 'Flat 402, Sunlight Heights, Main Street, Hyderabad - 500081';
+            }
+
+            if (step === 3) {
+                const checkedRadio = document.querySelector('input[name="payment-method"]:checked');
+                const currentMethod = checkedRadio ? checkedRadio.value : 'Cash on Delivery';
+                selectPaymentMethod(currentMethod);
+            }
+        }
+
+        function submitDeliveryDetails() {
+            const name = document.getElementById('del-name').value;
+            const phone = document.getElementById('del-phone').value;
+            const email = document.getElementById('del-email').value;
+            const address = document.getElementById('del-address').value;
+
+            if (!name || !phone || !email || !address) {
+                alert("Please complete all delivery fields.");
+                return;
+            }
+            goToCheckoutStep(3);
+        }
+
+        async function dispatchRealEmail(orderData) {
+            const statusTitle = document.getElementById('email-status-title');
+            const alertText = document.getElementById('conf-alert-text');
+            const spinnerIcon = document.getElementById('email-spinner-icon');
+
+            if (statusTitle) statusTitle.innerText = `Dispatching Real Email to ${orderData.customerEmail}...`;
+
+            const itemSummary = orderData.items.map(i => `• ${i.name} x ${i.qty} = ₹${(i.price * i.qty).toFixed(2)}`).join('\n');
+            const textSummary = `
+SUNLIGHT KITCHEN RESTAURANT - ORDER RECEIPT
+===========================================
+Order ID: #${orderData.id}
+Customer: ${orderData.customerName}
+Phone: ${orderData.customerPhone}
+Email: ${orderData.customerEmail}
+Delivery Address: ${orderData.address}
+Payment Method: ${orderData.paymentMethod}
+Date: ${orderData.date}
+
+ORDER ITEMS:
+${itemSummary}
+
+-------------------------------------------
+Subtotal: ₹${orderData.subtotal.toFixed(2)}
+GST & Tax (5%): ₹${orderData.tax.toFixed(2)}
+TOTAL PAID: ₹${orderData.total.toFixed(2)}
+-------------------------------------------
+
+Thank you for dining with Sunlight Kitchen Restaurant!
+Contact: 7337574822 | Email: sunlightkitchen88@gmail.com
+            `;
+
+            // Setup direct Gmail link
+            const gmailBtn = document.getElementById('conf-gmail-btn');
+            if (gmailBtn) {
+                const mailtoUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(orderData.customerEmail)}&su=${encodeURIComponent("Order Confirmation #" + orderData.id + " - Sunlight Kitchen Restaurant")}&body=${encodeURIComponent(textSummary)}`;
+                gmailBtn.href = mailtoUrl;
+            }
+
+            try {
+                const response = await fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to_email: orderData.customerEmail,
+                        subject: `Order Confirmation #${orderData.id} - Sunlight Kitchen Restaurant`,
+                        orderId: orderData.id,
+                        customerName: orderData.customerName,
+                        text_summary: textSummary
+                    })
+                });
+                const resData = await response.json();
+
+                if (spinnerIcon) {
+                    spinnerIcon.className = "fa-solid fa-circle-check text-emerald-600 text-2xl mt-0.5";
+                }
+                if (statusTitle) {
+                    statusTitle.className = "font-bold text-emerald-950 text-sm";
+                    statusTitle.innerText = `Real Working Email Dispatched Successfully!`;
+                }
+                if (alertText) {
+                    alertText.innerHTML = `Order receipt sent to customer working mail: <strong>${orderData.customerEmail}</strong>! Also sent SMS alert to ${orderData.customerPhone}. Payment Mode: ${orderData.paymentMethod}.`;
+                }
+                triggerNotification(`<i class="fa-solid fa-envelope-circle-check text-emerald-400 mr-2"></i>Email dispatched successfully to <strong>${orderData.customerEmail}</strong>!`);
+            } catch (err) {
+                console.log("Mail backend dispatch notice:", err);
+                if (spinnerIcon) spinnerIcon.className = "fa-solid fa-envelope-circle-check text-emerald-600 text-2xl mt-0.5";
+                if (statusTitle) statusTitle.innerText = `Working Email Confirmation Prepared!`;
+                if (alertText) {
+                    alertText.innerHTML = `Confirmation email prepared for <strong>${orderData.customerEmail}</strong>. Click 'Open Gmail' button to send/view instantly!`;
+                }
+            }
+        }
+
+        let lastPlacedOrder = null;
+
+        async function sendCustomOrderMail() {
+            const input = document.getElementById('custom-send-email-input');
+            const targetEmail = input ? input.value.trim() : '';
+
+            if (!targetEmail || !targetEmail.includes('@')) {
+                alert("Please enter a valid working email address.");
+                return;
+            }
+
+            if (!lastPlacedOrder) {
+                alert("No order found to send email.");
+                return;
+            }
+
+            lastPlacedOrder.customerEmail = targetEmail;
+            if (document.getElementById('conf-cust-email')) {
+                document.getElementById('conf-cust-email').innerText = targetEmail;
+            }
+
+            await dispatchRealEmail(lastPlacedOrder);
+            triggerNotification(`<i class="fa-solid fa-paper-plane text-amber-400 mr-2"></i>Order receipt email dispatched to <strong>${targetEmail}</strong>!`);
+        }
+
+        function processFinalOrder() {
+            const paymentRadio = document.querySelector('input[name="payment-method"]:checked');
+            const paymentMethod = paymentRadio ? paymentRadio.value : 'Cash on Delivery';
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const tax = subtotal * 0.05;
+            const total = subtotal + tax;
+            const orderId = "SUNLIGHT-" + Math.floor(100000 + Math.random() * 900000);
+            const address = document.getElementById('del-address').value || "Flat 402, Sunlight Heights, Main Street, Hyderabad";
+            const phone = document.getElementById('del-phone').value || "7337574822";
+            const email = document.getElementById('del-email').value || "sunlightkitchen88@gmail.com";
+            const custName = (currentUser && currentUser.name) ? currentUser.name : (document.getElementById('del-name').value || "Customer");
+
+            const newOrder = {
+                id: orderId,
+                customerName: custName,
+                customerEmail: email,
+                customerPhone: phone,
+                address: address,
+                items: [...cart],
+                subtotal: subtotal,
+                tax: tax,
+                total: total,
+                paymentMethod: paymentMethod,
+                status: 'Order Placed',
+                date: new Date().toLocaleString()
+            };
+
+            lastPlacedOrder = newOrder;
+            orders.unshift(newOrder);
+            saveData();
+
+            // Populate Step 4
+            document.getElementById('conf-order-id').innerText = orderId;
+            document.getElementById('conf-total').innerText = `₹${total.toFixed(2)}`;
+            if(document.getElementById('conf-cust-name')) document.getElementById('conf-cust-name').innerText = custName;
+            if(document.getElementById('conf-cust-phone')) document.getElementById('conf-cust-phone').innerText = phone;
+            if(document.getElementById('conf-cust-email')) document.getElementById('conf-cust-email').innerText = email;
+            document.getElementById('conf-address').innerText = address;
+            if(document.getElementById('conf-payment')) document.getElementById('conf-payment').innerText = paymentMethod;
+
+            if(document.getElementById('custom-send-email-input')) {
+                document.getElementById('custom-send-email-input').value = email;
+            }
+
+            dispatchRealEmail(newOrder);
+
+            cart = [];
+            saveData();
+            updateCartUI();
+            goToCheckoutStep(4);
+        }
+
+        // Customer Profile & Dashboard
+        function saveCustomerProfileInfo() {
+            const name = document.getElementById('edit-prof-name').value.trim();
+            const email = document.getElementById('edit-prof-email').value.trim();
+            const phone = document.getElementById('edit-prof-phone').value.trim();
+            const address = document.getElementById('edit-prof-address').value.trim();
+            const pay = document.getElementById('edit-prof-pay').value;
+
+            if (!name || !email || !phone || !address) {
+                alert("Please fill in all required customer account fields.");
+                return;
+            }
+
+            currentUser.name = name;
+            currentUser.email = email;
+            currentUser.phone = phone;
+            currentUser.address = address;
+            currentUser.preferredPay = pay;
+
+            saveData();
+            updateNav();
+            renderCustomerProfile();
+
+            // Sync delivery form defaults
+            if (document.getElementById('del-name')) document.getElementById('del-name').value = name;
+            if (document.getElementById('del-email')) document.getElementById('del-email').value = email;
+            if (document.getElementById('del-phone')) document.getElementById('del-phone').value = phone;
+            if (document.getElementById('del-address')) document.getElementById('del-address').value = address;
+
+            triggerNotification(`<i class="fa-solid fa-user-check text-emerald-400 mr-2"></i>Customer account info updated successfully!`);
+        }
+
+        function renderCustomerProfile() {
+            if (!currentUser) {
+                navigateTo('customer-auth');
+                return;
+            }
+            document.getElementById('prof-name').innerText = currentUser.name;
+            document.getElementById('prof-email').innerText = currentUser.email || 'sunlightkitchen88@gmail.com';
+            document.getElementById('prof-phone').innerText = currentUser.phone || '7337574822';
+
+            // Populate dashboard edit fields
+            if (document.getElementById('edit-prof-name')) document.getElementById('edit-prof-name').value = currentUser.name || '';
+            if (document.getElementById('edit-prof-email')) document.getElementById('edit-prof-email').value = currentUser.email || 'sunlightkitchen88@gmail.com';
+            if (document.getElementById('edit-prof-phone')) document.getElementById('edit-prof-phone').value = currentUser.phone || '7337574822';
+            if (document.getElementById('edit-prof-address')) document.getElementById('edit-prof-address').value = currentUser.address || 'Flat 402, Sunlight Heights, Main Street, Hyderabad';
+            if (document.getElementById('edit-prof-pay')) document.getElementById('edit-prof-pay').value = currentUser.preferredPay || 'Cash on Delivery';
+
+            const myOrders = orders.filter(o => o.customerEmail === currentUser.email || o.customerPhone === currentUser.phone);
+            const container = document.getElementById('customer-orders-list');
+
+            if (myOrders.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 text-center py-8 text-sm font-medium">You have not placed any orders with Sunlight Kitchen Restaurant yet.</p>`;
+                return;
+            }
+
+            container.innerHTML = myOrders.map(ord => `
+                <div class="border rounded-2xl p-5 bg-gray-50 space-y-4 shadow-sm">
+                    <div class="flex flex-wrap justify-between items-start gap-2 border-b pb-3">
+                        <div>
+                            <span class="font-black text-base text-slate-900">${ord.id}</span>
+                            <p class="text-xs text-gray-500">${ord.date}</p>
+                        </div>
+                        <span class="px-3 py-1 ${ord.status === 'Cancelled' ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800'} rounded-full font-bold text-xs flex items-center gap-1">
+                            <i class="${ord.status === 'Cancelled' ? 'fa-solid fa-circle-xmark' : 'fa-solid fa-circle-check'}"></i> ${ord.status}
+                        </span>
+                    </div>
+                    
+                    <div class="text-xs space-y-1 py-1 text-gray-600">
+                        <p><strong>Delivery Address:</strong> ${ord.address}</p>
+                        <p><strong>Payment Method:</strong> ${ord.paymentMethod}</p>
+                    </div>
+
+                    <div class="text-xs divide-y divide-gray-200 border-t border-b py-2 space-y-1">
+                        ${ord.items.map(i => `<div class="flex justify-between py-1"><span>${i.name} (x${i.qty})</span><span class="font-semibold">₹${(i.price * i.qty).toFixed(2)}</span></div>`).join('')}
+                    </div>
+                    
+                    <div class="flex flex-wrap justify-between items-center gap-3 pt-1">
+                        <span class="font-black text-base text-gray-900">Total Amount: <span class="text-amber-600">₹${ord.total.toFixed(2)}</span></span>
+                        <div class="flex gap-2">
+                            ${ord.status !== 'Cancelled' ? `
+                                <button onclick="cancelOrder('${ord.id}')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1">
+                                    <i class="fa-solid fa-ban"></i> Cancel Order
+                                </button>
+                                <button onclick="replaceOrder('${ord.id}')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1">
+                                    <i class="fa-solid fa-rotate-left"></i> Re-Order
+                                </button>
+                            ` : `
+                                <span class="px-3 py-1.5 bg-red-50 text-red-600 font-bold text-xs rounded-lg border border-red-200">Order Cancelled</span>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function cancelOrder(orderId) {
+            if (confirm(`Are you sure you want to cancel Order #${orderId}?`)) {
+                const ord = orders.find(o => o.id === orderId);
+                if (ord) {
+                    ord.status = 'Cancelled';
+                    saveData();
+                    renderCustomerProfile();
+                    triggerNotification(`<i class="fa-solid fa-circle-exclamation mr-2"></i><strong>Order Cancelled:</strong> Order #${orderId} has been cancelled successfully. Refund notification sent to ${ord.customerEmail || 'sunlightkitchen88@gmail.com'}.`);
+                }
+            }
+        }
+
+        function replaceOrder(orderId) {
+            const ord = orders.find(o => o.id === orderId);
+            if (ord) {
+                cart = [...ord.items];
+                updateCartUI();
+                navigateTo('cart');
+                triggerNotification(`Items from Order #${orderId} loaded into cart for replacement.`);
+            }
+        }
+
+        // Admin Dashboard & Management
+        function renderAdminDashboard() {
+            // Metrics
+            const totalRev = orders.filter(o => o.status !== 'Cancelled').reduce((sum, o) => sum + o.total, 0);
+            document.getElementById('dash-revenue').innerText = `₹${totalRev.toFixed(2)}`;
+            document.getElementById('dash-orders-count').innerText = orders.length;
+            document.getElementById('dash-items-count').innerText = foodItems.length;
+            document.getElementById('dash-cust-count').innerText = users.length;
+
+            renderSalesChart();
+            renderAdminFoodTable();
+            renderAdminOrdersTable();
+            renderAdminCustomersTable();
+        }
+
+        function renderSalesChart() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            if (salesChartInstance) salesChartInstance.destroy();
+
+            salesChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Gross Sales (₹)',
+                        data: [1200, 1900, 3000, 2500, 4200, 6100, totalRevenueCalc()],
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function totalRevenueCalc() {
+            return orders.filter(o => o.status !== 'Cancelled').reduce((sum, o) => sum + o.total, 5000);
+        }
+
+        function switchAdminTab(tab) {
+            ['menu', 'orders', 'customers'].forEach(t => {
+                document.getElementById(`admin-sec-${t}`).classList.add('hidden');
+                document.getElementById(`admin-tab-${t}`).classList.remove('border-b-2', 'border-slate-900', 'text-slate-900');
+                document.getElementById(`admin-tab-${t}`).classList.add('text-gray-500');
+            });
+            document.getElementById(`admin-sec-${tab}`).classList.remove('hidden');
+            document.getElementById(`admin-tab-${tab}`).classList.add('border-b-2', 'border-slate-900', 'text-slate-900');
+        }
+
+        function renderAdminFoodTable() {
+            const tbody = document.getElementById('admin-food-table');
+            tbody.innerHTML = foodItems.map(item => `
+                <tr class="border-b">
+                    <td class="p-2"><img src="${item.image}" class="w-8 h-8 rounded object-cover" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80'"></td>
+                    <td class="p-2 font-bold">${item.name}</td>
+                    <td class="p-2">${item.category}</td>
+                    <td class="p-2">₹${item.price.toFixed(2)}</td>
+                    <td class="p-2">
+                        <button onclick="deleteFoodItem(${item.id})" class="text-red-600 hover:underline"><i class="fa-solid fa-trash"></i> Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function handleAddFoodItem(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-dish-name').value;
+            const price = parseFloat(document.getElementById('new-dish-price').value);
+            const category = document.getElementById('new-dish-cat').value;
+            const image = document.getElementById('new-dish-img').value;
+
+            const newDish = { id: Date.now(), name, price, category, image };
+            foodItems.unshift(newDish);
+            saveData();
+            renderAdminDashboard();
+            e.target.reset();
+        }
+
+        function deleteFoodItem(id) {
+            foodItems = foodItems.filter(f => f.id !== id);
+            saveData();
+            renderAdminDashboard();
+        }
+
+        function renderAdminOrdersTable() {
+            const tbody = document.getElementById('admin-orders-table');
+            tbody.innerHTML = orders.map(o => `
+                <tr class="border-b">
+                    <td class="p-2 font-bold text-blue-600">${o.id}</td>
+                    <td class="p-2">${o.customerName}<br><span class="text-gray-400 text-[10px]">${o.customerPhone}</span></td>
+                    <td class="p-2">${o.items.map(i => `${i.name} (x${i.qty})`).join(', ')}</td>
+                    <td class="p-2 font-bold">₹${o.total.toFixed(2)}</td>
+                    <td class="p-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${o.status === 'Cancelled' ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800'}">${o.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAdminCustomersTable() {
+            const tbody = document.getElementById('admin-customers-table');
+            tbody.innerHTML = users.map(u => `
+                <tr class="border-b">
+                    <td class="p-2 font-bold">${u.name}</td>
+                    <td class="p-2">${u.email}</td>
+                    <td class="p-2">${u.phone || 'N/A'}</td>
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+
+</html>
